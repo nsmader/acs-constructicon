@@ -30,8 +30,8 @@ api.key.install(myKey, file = "key.rda")
 geo.lookup(state=pullSt, county=pullCounties)
 geo.lookup(state=pullSt, county=pullPlace)
 myGeo <- geo.make(state = pullSt, county = pullCounties, tract = "*")
-acs.lookup(endyear = pullYear, span = pullSpan, dataset = "acs", table.number = c("ABCD"))
-  # XXX Doesn't seem to like multiple arguments to table.number. May be because 
+acs.lookup(endyear = pullYear, span = pullSpan, dataset = "acs", table.number = c("B17014"))
+  # XXX Doesn't seem to like multiple arguments to table.number.
 
 # Pull the tables one-by-one
   for (myT in pullTables){
