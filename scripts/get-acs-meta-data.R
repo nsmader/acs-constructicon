@@ -24,7 +24,7 @@ for (myT in 1:length(myTables)){
   myTable <- myTables[myT]
   if (myT %% 25 == 0) print(paste(myT / length(myTables), "done"))
   meta <- try(acs.lookup(endyear = 2013, span = 5, dataset = "acs", table.number = myTable), silent = T)
-  if (class(meta)=="try-error") next() # This is necessary because 
+  if (class(meta)=="try-error") next() # This is necessary because some table numbers in the documentation are not available from the API
   parsedNames <- parseVarname(meta@results$variable.name)
   parsedOut <- unique(c(parsedOut, parsedNames))
 }

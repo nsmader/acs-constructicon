@@ -1,0 +1,33 @@
+component,description
+G,Gender
+Amind,American Indian
+le#,Less than or equal to #
+lt#,Less than #
+ge#,Greater than or equal to #
+gt#,Greater than #
+A,Age
+M,Male
+F,Female
+Nat,Native
+a,"In context of race: ""alone"""
+Pi,Pacific Islander
+o,"In context of race: ""other"""
+eq#,Equal to #
+#to#,"Values # to #, inclusive"
+Hh,Household
+Hus,Husband
+Wife,Wife
+N,"Means ""no"", ""not"", ""un-"", or otherwise negates what follows"
+per,person
+Fam,Family
+Marr,Married
+Is,there is/is present
+NIs,there is not/is not present
+Part,Partner
+Pubasst,"Public assistance, including Supplemental Security Income (SSI), cash public assistance income, or Food Stamps/SNAP"
+mo,Month/months
+Prev,"In the prior/previous time, e.g. Prev12mo is the prior 12 months"
+Gpar,Grandparent
+yr,Year
+Resp,Responsible for
+Gch,Grandchild
