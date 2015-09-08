@@ -31,3 +31,14 @@ Gpar,Grandparent
 yr,Year
 Resp,Responsible for
 Gch,Grandchild
+Inc,Income
+Pov,Federal poverty line
+#x,# times (i.e. multiple)
+Lfp,Labor-force participant
+Geo@,"Geography is ""@"""
+Med,Median
+Min,Minutes
+Sp,Spouse
+Oth,Other
+Sep,Separated
+Sub,"Sub (as in ""sub family"")"

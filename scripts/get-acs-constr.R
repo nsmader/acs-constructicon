@@ -11,6 +11,9 @@ constr.ref <- read.csv(file = "data/constructions-lookup.csv",
                        stringsAsFactors = FALSE)
 sub.patterns <- read.csv(file = "data/parsed-components-of-variable-names_coded.csv",
                          stringsAsFactors = FALSE)
+sub.patterns <- sub.patterns[order(nchar(sub.patterns$x), decreasing = TRUE),]
+  # This step is used to order the longest strings first, so that substrings 
+  # do not get replaced before longer strings containing them do
 
 #-------------------------------------------------------------------------------
 # Base function used for top-level calls
