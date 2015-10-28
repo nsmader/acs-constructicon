@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
 # Load relevant libraries and files
 #-------------------------------------------------------------------------------
-try(setwd(dir = "C:/Users/nmader/Documents/GitHub/acs-constructicon/"), silent = TRUE)
+try(setwd(dir = "~/GitHub/acs-constructicon/"), silent = TRUE)
 library(acs)
 ep <- function(x) eval(parse(text = x))
 keyFile <- read.delim(file = "./key/key.txt", header = F)
@@ -9,33 +9,30 @@ myKey <- as.character(keyFile[1,1])
 api.key.install(myKey, file = "key.rda")
 constr.ref <- read.csv(file = "data/constructions-lookup.csv",
                        stringsAsFactors = FALSE)
-sub.patterns <- read.csv(file = "data/parsed-components-of-variable-names_coded.csv",
-                         stringsAsFactors = FALSE)
-sub.patterns <- sub.patterns[order(nchar(sub.patterns$x), decreasing = TRUE),]
-  # This step is used to order the longest strings first, so that substrings 
-  # do not get replaced before longer strings containing them do
+source("scripts/rename-cols.R")
 
 #-------------------------------------------------------------------------------
 # Base function used for top-level calls
 #-------------------------------------------------------------------------------
 
 # geo <- geo.make(state = "IL", county = "Cook", tract = "*")
-# endyear = 2013; span = 5; constr <- "Child Poverty"
+# endyear = 2013; span = 5; constr <- "Child Poverty"; nametype <- "var"
+# endyear = 2013; span = 5; constr <- "Teen Birth Rate"; nametype <- "var"
 
 getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
   
-  # Look up tables involved with the requested construction(s)
+  ### Look up tables involved with the requested construction(s)
     constr.tables <- unlist(strsplit(constr.ref$acs_tables_req[constr.ref$constructions == constr], split = ","))
   
-  # Use the acs package to pull those ACS tables using the other supplied parameters
+  ### Use the acs package to pull those ACS tables using the other supplied parameters
     for (ixt in 1:length(constr.tables)){
       myt <- constr.tables[ixt]
       
       # Pull data for the table
-      acs.pull <- acs.fetch(geography = geo,
-                            endyear = endyear,
-                            span = span,
-                            table.number = myt)
+      try(acs.pull <- acs.fetch(geography = geo,
+                                endyear = endyear,
+                                span = span,
+                                table.number = myt), silent = TRUE)
       acs.est <- acs.pull@estimate
       acs.est.df <- data.frame(acs.est)
       
@@ -59,13 +56,16 @@ getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
       }
     }
   
-  # Rename the column elements in those tables
-    named.tables <- nameTables(rawTables, nametype = nametype)
+  ### Rename the column elements in those tables
+    renamed.tables <- nameTables(tables = rawTables,
+                                 nametype = nametype)
   
-  # Call a script which constructs desired measures from the table elements
+  ### Call a script which constructs desired measures from the table elements
     myscript <- constr.ref$script_file[constr.ref$constructions == constr]
     source(paste0("scripts/constr-scripts/", myscript))
-    ep(paste0(gsub("-|.R", "", myscript), "(renamed)"))
-  
+    constr.vars <- ep(paste0(gsub("-|.R", "", myscript), "(renamed.tables)"))
+    
+  return(constr.vars)
+    
 }
 
