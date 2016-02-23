@@ -16,13 +16,14 @@ source("scripts/rename-cols.R")
 #-------------------------------------------------------------------------------
 
 # geo <- geo.make(state = "IL", county = "Cook", tract = "*")
-# endyear = 2013; span = 5; constr <- "Child Poverty"; nametype <- "var"
-# endyear = 2013; span = 5; constr <- "Teen Birth Rate"; nametype <- "var"
+# endyear = 2013; span = 5; constr = "Child Poverty"; nametype = "var"
+# endyear = 2013; span = 5; constr = "Teen Birth Rate"; nametype  "var"
 
 getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
   
   ### Look up tables involved with the requested construction(s)
-    constr.tables <- unlist(strsplit(constr.ref$acs_tables_req[constr.ref$constructions == constr], split = ","))
+    constr.tables <- unlist(strsplit(with(constr.ref, acs_tables_req[constructions == constr]),
+                                     split = ","))
   
   ### Use the acs package to pull those ACS tables using the other supplied parameters
     for (ixt in 1:length(constr.tables)){
@@ -33,8 +34,7 @@ getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
                                 endyear = endyear,
                                 span = span,
                                 table.number = myt), silent = TRUE)
-      acs.est <- acs.pull@estimate
-      acs.est.df <- data.frame(acs.est)
+      acs.est.df <- data.frame(acs.pull@estimate)
       
       # Need to give the columns the descriptions
       meta <- acs.lookup(endyear = endyear, span = span, dataset = "acs", table.number = myt)
@@ -57,13 +57,18 @@ getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
     }
   
   ### Rename the column elements in those tables
-    renamed.tables <- nameTables(tables = rawTables,
+    renamed.tables <- nameTables(tables = raw.tables,
                                  nametype = nametype)
   
   ### Call a script which constructs desired measures from the table elements
-    myscript <- constr.ref$script_file[constr.ref$constructions == constr]
-    source(paste0("scripts/constr-scripts/", myscript))
-    constr.vars <- ep(paste0(gsub("-|.R", "", myscript), "(renamed.tables)"))
+    selectableGeographies <- c("us", "region", "division", "state", "county",
+                             "subminor", "place", "tract", "block+group",
+                             "consolidated+city", "alaska+native+regional+corporation",
+                             "american+indian+area/alaska+native+area/hawaiian+home+land",
+                             "tribal+subdivision")
+    myscript <- with(constr.ref, script_file[constructions == constr])
+    source(paste0("scripts/constr-scripts/", myscript)) # Source the script to get the function
+    constr.vars <- ep(paste0(gsub("-|.R", "", myscript), "(renamed.tables, geos = selectableGeographies)")) # Run the function on our tables
     
   return(constr.vars)
     
