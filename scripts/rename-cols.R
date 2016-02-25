@@ -22,26 +22,24 @@ nameTables <- function(tables, nametype){
                                    "semantic" = "semanticStub")]]
 
   # Remove lead and trailing spaces, and replace colons
-  colnames(renamed) <- gsub("^ | $", "", colnames(renamed))
-  colnames(renamed) <- gsub("(?<![0-9]):[ ]", "_", colnames(renamed), perl = TRUE)
+  colnames(renamed) <- gsub("^\\s+|\\s+$", "", colnames(renamed))
+  colnames(renamed) <- gsub("(?<![\\d]):\\s", "_", colnames(renamed), perl = TRUE)
     # This prior command replaces only colons that aren't preceded by a number
     # (to not replace those as parts of times of day)
   colnames(renamed) <- gsub(":$", "", colnames(renamed))
-    # For some reason, trailing colons still needed to be removed
+    # Replace colons at the end of the line with nothing at all
+  
+  # Since we're using regular expressions for replacements, make sure that
+  # parentheses in the descriptors are indicated as literals, using back-slashes
+  descL  <- gsub("\\(", "\\\\(", descriptors)
+  descLR <- gsub("\\)", "\\\\)", descL)
+    # These replace e.g. "(" in the descriptors value with "\\("
   
   # Substitute names
-  # /!\ maybe sapply this instead?
-  hold <- renamed
-  renamed <- hold
+  # Not sure if this can be done any way but sequentially
   for (i in 1:nrow(sub.patterns)){
 
-    # Since we're using regular expressions for replacements, make sure that
-    # parentheses in the descriptors are indicated as literals, using back-slashes
-    mydescr <- gsub("\\(", "\\\\(", descriptors[i])
-    mydescr <- gsub("\\)", "\\\\)", mydescr)
-      # These replace e.g. "(" in the descriptors value with "\\("
-    
-    colnames(renamed) <- gsub(pattern = mydescr,
+    colnames(renamed) <- gsub(pattern = descLR[i],
                               replacement = newnames[i],
                               x = colnames(renamed))
   }

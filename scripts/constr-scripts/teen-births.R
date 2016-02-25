@@ -1,11 +1,12 @@
 # This script creates child poverty measures using table B13002
 # See https://www.socialexplorer.com/data/ACS2012_5yr/metadata/?ds=American+Community+Survey+Tables%3A++2008+--+2012+(5-Year+Estimates)&table=B13002
-teenbirths <- function(in_data){
+teenbirths <- function(in_data, geos){
   ### Set up data to work with
-  out_data <- in_data[, c("geoid", "tract")]
+  out_data <- subset(in_data,
+                     select = colnames(in_data) %in% geos)
   attach(in_data)
   
-  ### Create variables of interest by "integrating" across unused cross-tabs
+  ### Create variables of interest by summing across unused cross-tabs
   for (a in c("A15to19", "A20to34", "A35to50")){
     for (b in c("Birth", "NBirth")){
       # Add across marital status to get all woman who did/didn't give birth in
