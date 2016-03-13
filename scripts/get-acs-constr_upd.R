@@ -18,7 +18,8 @@ source("scripts/rename-cols.R")
 
 # geo <- geo.make(state = "IL", county = "Cook", tract = "*")
 # endyear = 2013; span = 5; constr = "Child Poverty"; nametype = "var"
-# endyear = 2013; span = 5; constr = "Teen Birth Rate"; nametype  "var"
+# endyear = 2013; span = 5; constr = "Teen Birth Rate"; nametype = "var"
+# endyear = 2013; span = 5; constr = "Ed by Age, Sex"; nametype = "var"
 
 getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
   
