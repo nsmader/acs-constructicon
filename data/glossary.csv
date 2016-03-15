@@ -43,3 +43,7 @@ Oth,Other
 Sep,Separated
 Sub,"Sub (as in ""sub family"")"
 Ed,Education
+HsEq,"High school, or equivalent"
+Sc,"Some college (in the context of ""Ed"")"
+Ba,"Bachelor's degree (in the context of ""Ed"")"
+Grad,"Graduate or professional degree (in context of ""Ed"")"
