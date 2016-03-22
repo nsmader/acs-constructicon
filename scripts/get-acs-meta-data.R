@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------------
-# Pull all ACS meta-data into machine-readible format to be converted and typologized
+# Pull all ACS meta-data into machine-readable format to be converted and typologized
 #------------------------------------------------------------------------------------
 
 library("acs")
@@ -14,6 +14,11 @@ parseVarname <- function(varnames){
   mySplit <- strsplit(varnames, split = "(?<![0-9]):", perl = TRUE)
     # Split on colon, so long as it doesn't correspond to a time of day
     #  (which we check by ruling out any colons which occur after a number)
+    # IMM: I believe there can be colons after numbers that are not
+    # representing the time of day. For instance, B05010 is first broken out
+    # by ratio of income to poverty (Under 1.00, 1.00 to 1.99, 2.0 and over) and
+    # then there are further categories. In these cases, the string wouldn't be split
+    # even though it is a valid cut point.
   myUnlist <- sapply(unlist(mySplit), function(x) gsub("^ | $", "", x))
   return(unique(myUnlist))
 }
