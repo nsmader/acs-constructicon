@@ -4,21 +4,27 @@
 
 library("acs")
 library("xlsx")
-setwd("~/GitHub/acs-constructicon/")
+try(setwd("~/GitHub/acs-constructicon/"))
+try(setwd(dir = "/Users/imorey/Documents/GitHub/acs-constructicon/"), silent = TRUE)
 
 # Identify all tables
 tableMeta <- read.xlsx("./doc/ACS_2013_SF_5YR_Appendices.xls", 1)
 
 # Generate function to parse variable names
 parseVarname <- function(varnames){
-  mySplit <- strsplit(varnames, split = "(?<![0-9]):", perl = TRUE)
+  #mySplit <- strsplit(varnames, split = "(?<![0-9]):", perl = TRUE)
     # Split on colon, so long as it doesn't correspond to a time of day
     #  (which we check by ruling out any colons which occur after a number)
+    
     # IMM: I believe there can be colons after numbers that are not
-    # representing the time of day. For instance, B05010 is first broken out
-    # by ratio of income to poverty (Under 1.00, 1.00 to 1.99, 2.0 and over) and
-    # then there are further categories. In these cases, the string wouldn't be split
-    # even though it is a valid cut point.
+    # representing the time of day. 
+    # Update: After running this script on my local drive I can confirm that I'm 
+    # seeing instances where components should have been parsed out, but were not.
+    # Example: "With related children under 18: With own children under 18:"
+  
+  # This appears to work!
+  mySplit <- strsplit(varnames, split = ":(?![0-9])", perl = TRUE)
+  
   myUnlist <- sapply(unlist(mySplit), function(x) gsub("^ | $", "", x))
   return(unique(myUnlist))
 }
@@ -42,5 +48,5 @@ for (myT in 1:length(myTables)){
   parsedNames <- parseVarname(meta@results$variable.name)
   parsedOut <- unique(c(parsedOut, parsedNames))
 }
-write.csv(parsedOut, "./data/parsed-components-of-variable-names.csv", row.names = FALSE)
+write.csv(parsedOut, "./data/parsed-components-of-variable-names_imm.csv", row.names = FALSE)
 
