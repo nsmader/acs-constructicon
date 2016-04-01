@@ -8,7 +8,6 @@ ep <- function(x) eval(parse(text = x))
 myFileName <- "./key/key.txt"
 myKey <- readChar(myFileName, file.info(myFileName)$size)
 api.key.install(myKey, file = "key.rda")
-
 constr.ref <- read.csv(file = "data/constructions-lookup.csv",
                        stringsAsFactors = FALSE)
 source("scripts/rename-cols.R")
