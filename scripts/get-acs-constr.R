@@ -1,5 +1,3 @@
-source("scripts/acs.R")
-
 #-------------------------------------------------------------------------------
 # Load relevant libraries and files
 #-------------------------------------------------------------------------------
@@ -7,11 +5,9 @@ try(setwd(dir = "~/GitHub/acs-constructicon/"), silent = TRUE)
 try(setwd(dir = "/Users/imorey/Documents/GitHub/acs-constructicon/"), silent = TRUE)
 library(acs)
 ep <- function(x) eval(parse(text = x))
-
-my_key_file <- "./key/key.txt"
-if (!have_api_key()) {
-    load_api_key(my_key_file)
-}
+myFileName <- "./key/key.txt"
+myKey <- readChar(myFileName, file.info(myFileName)$size)
+api.key.install(myKey, file = "key.rda")
 
 constr.ref <- read.csv(file = "data/constructions-lookup.csv",
                        stringsAsFactors = FALSE)
