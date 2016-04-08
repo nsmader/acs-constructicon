@@ -1,0 +1,30 @@
+---
+title: "ACS Key Management"
+author: "Dylan Stark"
+output: html_document
+---
+
+You can request a key at the US Census Bureau's [key signup page](http://api.census.gov/data/key_signup.html).
+All you need is an organization name and email address.
+And, after you agree to the terms of service and submit the form, your key will be emailed to you.
+When you receive the API key in an email, all that's left is to click the link active the key.
+
+Now, you should have a key that looks something like `c009d1d366fe5077a7266212f3205b7715745441`.
+Use either the `enter_api_key` or `load_api_key` method to install your new key.
+The former will prompt you to type in (or copy-and-paste) the key.
+The latter will read the key from a file.
+
+For example, in a if you store your key in `Key.txt`, you can test and optionally load in a script with
+
+```r
+if (!have_api_key()) {
+    load_api_key("Key.txt")
+}
+```
+
+Or, if using during an interactive session, try
+
+```r
+> enter_api_key()
+Enter API key: c009d1d366fe5077a7266212f3205b7715745441
+```
