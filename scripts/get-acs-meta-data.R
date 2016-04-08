@@ -25,7 +25,8 @@ parseVarname <- function(varnames){
   # This appears to work!
   mySplit <- strsplit(varnames, split = ":(?![0-9])", perl = TRUE)
   
-  myUnlist <- sapply(unlist(mySplit), function(x) gsub("^ | $", "", x))
+  #myUnlist <- sapply(unlist(mySplit), function(x) gsub("^ | $", "", x))
+  myUnlist <- sapply(unlist(mySplit), function(x) gsub("^\\s+|\\s+$", "", x))
   return(unique(myUnlist))
 }
 
@@ -35,6 +36,7 @@ myTables <- myTables[!grepl("PR$|B05011|B09018|B09019|B09020|B10052", myTables) 
   # The specific tables mentioned here just happened to create problems (that haven't yet been investigated)
 
 # myTables <- gsub(" ", "", unlist(strsplit(c("B08011, B08132, B08133, B08302, B08532, B08602"), split = ",")))
+
 parsedOut <- NULL
 for (myT in 1:length(myTables)){
   myTable <- myTables[myT]
