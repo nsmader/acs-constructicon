@@ -4,12 +4,10 @@
 \alias{code}
 \title{Construct coded name}
 \usage{
-code(strs, year)
+code(strs)
 }
 \arguments{
 \item{strs}{character vector}
-
-\item{year}{survey year}
 }
 \value{
 coded variable name
@@ -18,7 +16,7 @@ coded variable name
 Construct coded name
 }
 \examples{
-code(c("Amrs", "LatAm", "Crb", "Wid3"), 2014)
+code(c("GF", "A20to24"))
 
 }
 

@@ -1,19 +1,18 @@
 #' Construct coded name
 #'
 #' @param strs character vector
-#' @param year survey year
 #' @return coded variable name
 #'
 #' @examples
-#' code(c("Amrs", "LatAm", "Crb", "Wid3"), 2014)
+#' code(c("GF", "A20to24"))
 #'
 #' @export
-code <- function(strs, year) {
-    x <- paste0(strs, collapse = "_")
-    if (!(x %in% names(acsmsrs_codes[[as.character(year)]]))) {
-        warning("Could not find matching variable for ", x,
-                " in year ", year)
+code <- function(strs) {
+    full_name <- paste0(strs, collapse = "_")
+    if (!(full_name %in% names(coded_vars))) {
+        warning("Could not find matching variable for ", full_name)
+        full_name <- NA
     }
 
-    x
+    full_name
 }

@@ -96,6 +96,7 @@ raw_files <- list(
 )
 
 acsmsrs_codes <- list()
+coded_vars <- list()
 
 for (raw_file in raw_files) {
     # Retrieve ACS variable information if not already present
@@ -127,10 +128,30 @@ for (raw_file in raw_files) {
     message("Generating new variable list for ", raw_file$end_year,
             " 5-year survey")
     var_list <- gen_var_list(variables)
+
+    # Remap variable list to make look up easier and to save space
     acsmsrs_codes[[var_list_name]] <- var_list
+    for (var_name in names(var_list)) {
+        var_value <- var_list[[var_name]]
+        if (!(var_name %in% names(coded_vars))) {
+            # Adding for first time
+            coded_vars[[var_name]] <- c(var_value)
+            names(coded_vars[[var_name]]) <- raw_file$end_year
+        } else {
+            # Adding for nth time
+            existing_values <- coded_vars[[var_name]]
+            if (!(var_value %in% existing_values)) {
+                existing_names <- names(coded_vars[[var_name]])
+                coded_vars[[var_name]] <- c(existing_values, var_value)
+                names(coded_vars[[var_name]]) <- c(existing_names, raw_file$end_year)
+            }
+        }
+    }
+
+    num_multi <- length(Filter(function(x) length(x) > 1, coded_vars))
+    message("Encoded total of ", length(coded_vars), " encodings; of which, ",
+            num_multi, " have multiple target variables.")
 }
 
 # Store data for use in package
-devtools::use_data(acsmsrs_codes,
-                   internal = TRUE,
-                   overwrite = TRUE)
+save(coded_vars, file = "data-raw/coded_vars.Rda")

@@ -6,6 +6,7 @@
 data-raw/variables_*_list.Rda
 data-raw/variables_*.json
 data-raw/variables_*.Rda
+data-raw/coded_vars.Rda
 
 # Temporary system files
 *.swp
