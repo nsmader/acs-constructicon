@@ -1,6 +1,7 @@
 library(jsonlite)
 library(stringr)
 library(tidyr)
+library(dplyr)
 
 look_up_code <- function(x, codes) {
     code <- codes[codes$x == x,]$varStub
@@ -40,40 +41,6 @@ gen_variables <- function(json_path, variables_path) {
     variables
 }
 
-# Generate list of encoded variables.
-#
-# Creates a list mapping encoded variable strings to underlying variable
-# names (e.g., "IncPrev12moGePov_FamOth_HhGmNWife_ALt5" to "B17006_023")
-# for look up in estimates matrix.
-gen_var_list <- function(variables) {
-    # Encode
-    codes <- read.csv("data-raw/codes.csv", stringsAsFactors = FALSE)
-    all_vars <- lapply(variables$label, parse_variable, codes)
-
-    # Filter for fully-coded vars
-    coded_vars <- sapply(all_vars, function(x) !any(is.na(x)))
-    variables <- variables[coded_vars,]
-    variables$label <- sapply(all_vars[coded_vars], paste, collapse = "_")
-
-    # Construct lookup list
-    var_list <- variables$id
-    names(var_list) <- variables$label
-
-    # Write out some helpful messages
-    num_vars <- length(all_vars)
-    message("Processed ", num_vars, " variables for ",
-            raw_file$end_year, " 5-year survey")
-    num_coded_vars <- nrow(variables)
-    message("Found ", num_vars - num_coded_vars,
-            " partially coded variables for ", raw_file$end_year,
-            " 5-year survey")
-    message("Found ", num_coded_vars,
-            " fully coded variables for ", raw_file$end_year,
-            " 5-year survey")
-
-    var_list
-}
-
 raw_files <- list(
     list(end_year = 2009,
          filename = "variables_2009",
@@ -95,8 +62,7 @@ raw_files <- list(
          url = "http://api.census.gov/data/2014/acs5/variables.json")
 )
 
-acsmsrs_codes <- list()
-coded_vars <- list()
+vars_df <- NULL
 
 for (raw_file in raw_files) {
     # Retrieve ACS variable information if not already present
@@ -116,6 +82,7 @@ for (raw_file in raw_files) {
         message("Generating new variable data frame for ", raw_file$end_year,
                 " 5-year survey")
         variables <- gen_variables(json_path)
+        variables$end_year <- raw_file$end_year
         save(variables, file = variables_path)
     } else {
         message("Using existing variable data frame for ", raw_file$end_year,
@@ -123,35 +90,23 @@ for (raw_file in raw_files) {
         load(variables_path)
     }
 
-    # Encode labels; store in list to make look up easy
-    var_list_name <- as.character(raw_file$end_year)
-    message("Generating new variable list for ", raw_file$end_year,
-            " 5-year survey")
-    var_list <- gen_var_list(variables)
-
-    # Remap variable list to make look up easier and to save space
-    acsmsrs_codes[[var_list_name]] <- var_list
-    for (var_name in names(var_list)) {
-        var_value <- var_list[[var_name]]
-        if (!(var_name %in% names(coded_vars))) {
-            # Adding for first time
-            coded_vars[[var_name]] <- c(var_value)
-            names(coded_vars[[var_name]]) <- raw_file$end_year
-        } else {
-            # Adding for nth time
-            existing_values <- coded_vars[[var_name]]
-            if (!(var_value %in% existing_values)) {
-                existing_names <- names(coded_vars[[var_name]])
-                coded_vars[[var_name]] <- c(existing_values, var_value)
-                names(coded_vars[[var_name]]) <- c(existing_names, raw_file$end_year)
-            }
-        }
-    }
-
-    num_multi <- length(Filter(function(x) length(x) > 1, coded_vars))
-    message("Encoded total of ", length(coded_vars), " encodings; of which, ",
-            num_multi, " have multiple target variables.")
+    # Build up full data frame of all variables across all surveys
+    vars_df <- rbind(vars_df, variables)
 }
 
+# Encode unique labels across all surveys
+codes <- read.csv("data-raw/codes.csv", stringsAsFactors = FALSE)
+all_labels <- unique(vars_df$label)
+all_vars <- lapply(all_labels, parse_variable, codes)
+
+# Filter for fully coded vars
+coded_vars <- sapply(all_vars, function(x) !any(is.na(x)))
+all_labels <- all_labels[coded_vars]
+all_vars <- sapply(all_vars[coded_vars], paste, collapse = "_")
+
+# Join in coded labels; discard labels that are not fully coded
+coded_df <- data.frame(label = all_labels, code = all_vars)
+coded_data <- merge(vars_df, coded_df)
+
 # Store data for use in package
-save(coded_vars, file = "data-raw/coded_vars.Rda")
+save(coded_data, file = "data-raw/coded_data.Rda")

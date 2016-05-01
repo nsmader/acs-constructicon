@@ -1,5 +1,5 @@
-load("data-raw/coded_vars.Rda")
+load("data-raw/coded_data.Rda")
 
-devtools::use_data(coded_vars,
+devtools::use_data(coded_data,
                    internal = TRUE,
                    overwrite = TRUE)
