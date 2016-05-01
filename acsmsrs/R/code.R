@@ -1,7 +1,7 @@
 #' Construct coded name
 #'
-#' @param strs character vector
-#' @return coded variable name
+#' @param strs character vector.
+#' @return The coded variable name.
 #'
 #' @examples
 #' code(c("GF", "A20to24"))
@@ -9,7 +9,7 @@
 #' @export
 code <- function(strs) {
     full_name <- paste0(strs, collapse = "_")
-    if (!(full_name %in% names(coded_vars))) {
+    if (!(full_name %in% coded_data$code)) {
         warning("Could not find matching variable for ", full_name)
         full_name <- NA
     }

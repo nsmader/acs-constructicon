@@ -7,10 +7,10 @@
 code(strs)
 }
 \arguments{
-\item{strs}{character vector}
+\item{strs}{character vector.}
 }
 \value{
-coded variable name
+The coded variable name.
 }
 \description{
 Construct coded name
