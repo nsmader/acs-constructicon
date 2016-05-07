@@ -1,3 +1,21 @@
+# Internal environment storing construction information
+constr_env <- new.env(parent = emptyenv())
+
+# Adds new construction
+constr_register <- function(full_name, class_name, tables) {
+    if (constr_exists(full_name)) {
+        stop("Construction '", full_name, "' previously registered as '",
+             class_name, "'")
+    }
+
+    new_entry <- list(
+        class_name = class_name,
+        tables = tables
+    )
+    
+    assign(full_name, new_entry, envir = constr_env)
+}
+
 constr_exists <- function(full_name) {
     exists(full_name, envir = constr_env)
 }

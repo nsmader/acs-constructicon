@@ -15,6 +15,9 @@ fetch_acs_data(name, geo, endyear, span)
 
 \item{span}{survey span.}
 }
+\value{
+An ACS dataset.
+}
 \description{
 Fetch ACS dataset.
 }
