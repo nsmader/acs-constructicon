@@ -8,12 +8,22 @@ constr_register <- function(full_name, class_name, tables) {
              class_name, "'")
     }
 
+    # Add entry for new construction
     new_entry <- list(
         class_name = class_name,
         tables = tables
     )
-    
     assign(full_name, new_entry, envir = constr_env)
+
+    # Add look up entry for new construction
+    new_lookup <- c(full_name)
+    names(new_lookup) <- c(class_name)
+    if (exists("lookups", envir = constr_env)) {
+        all_lookups <- get("lookups", envir_constr_env)
+    } else {
+        all_lookups <- new_lookup
+    }
+    assign("lookups", all_lookups, envir = constr_env)
 }
 
 constr_exists <- function(full_name) {
