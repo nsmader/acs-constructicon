@@ -4,10 +4,10 @@
 \alias{code}
 \title{Construct coded name}
 \usage{
-code(strs)
+code(...)
 }
 \arguments{
-\item{strs}{character vector.}
+\item{...}{character string components of a name.}
 }
 \value{
 The coded variable name.
@@ -16,7 +16,7 @@ The coded variable name.
 Construct coded name
 }
 \examples{
-code(c("GF", "A20to24"))
+code("GF", "A20to24")
 
 }
 
