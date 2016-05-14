@@ -39,6 +39,7 @@ construct <- function(name, data) {
     constr$name <- name
 
     # Load data
+    constr$endyear <- data@endyear
     constr$df <- convert_acs_data(data)
 
     # Apply generic construction method
