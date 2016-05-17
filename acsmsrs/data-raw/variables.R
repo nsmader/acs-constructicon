@@ -1,3 +1,6 @@
+# Methods for retrieving, processing, and loading ACS variables data.
+# The update_variables_info() method is the main entry point.
+
 library(jsonlite)
 library(stringr)
 library(tidyr)
@@ -12,101 +15,117 @@ look_up_code <- function(x, codes) {
     code
 }
 
-parse_variable <- function(label, codes) {
+parse_label <- function(label, codes) {
     tokens <- str_split(label, ":!!|!!")[[1]]
     sapply(tokens, look_up_code, codes, USE.NAMES = FALSE)
 }
 
+var_path <- function(end_year, span, ext) {
+    paste0("data-raw/variables_", end_year, "_", span, ext)
+}
 
-# Generate variables data set from raw JSON file.
-#
-# Converts JSON representation to data frame. Subsets usable data. Cleans
-# variable names.
-gen_variables <- function(json_path, variables_path) {
-    variables <- fromJSON(json_path)$variables
-    # Filter out unused records
-    variables <- variables[!is.na(str_match(names(variables), "^B[0-9]+_[0-9]+E$"))]
+json_path <- function(end_year, span) {
+    var_path(end_year, span, ".json")
+}
+
+json_url <- function(end_year, span) {
+    paste0("http://api.census.gov/data/", end_year,
+           "/acs", span, "/variables.json")
+}
+
+data_path <- function(end_year, span) {
+    var_path(end_year, span, ".Rda")
+}
+
+data_var <- function(end_year, span) {
+    paste("codes", end_year, span, sep = "_")
+}
+
+# Downloads variables metadata in JSON format for the specified survey.
+download_variables_json <- function(end_year, span, use_cache = TRUE) {
+    if (use_cache && file.exists(json_path(end_year, span))) {
+        message("Using existing variable info. for ", end_year, " ACS ",
+                span, "-year survey")
+    } else {
+        message("Pulling variable info. for ", end_year, " ACS ", span,
+                "-year survey")
+        download.file(url = json_url(end_year, span),
+                      destfile = json_path(end_year, span),
+                      quiet = TRUE)
+    }
+}
+
+# Load variables data.
+load_variables_data <- function(end_year, span, use_cache = TRUE) {
+    if (use_cache && file.exists(data_path(end_year, span))) {
+        message("Using existing variable data for ", end_year, " ACS ",
+                span, "-year survey")
+        load(data_path(end_year, span))
+    } else {
+        message("Generating variable data for ", end_year, " ACS ", span,
+                "-year survey")
+        assign(data_var(end_year, span),
+               process_variables_json(end_year, span))
+        save(list = data_var(end_year, span), file = data_path(end_year, span))
+    }
+
+    get(data_var(end_year, span))
+}
+
+# Encodes variable labels. Returns only variables that could be fully encoded.
+encode_unique_labels <- function(variables) {
+    stopifnot(file.exists("data-raw/codes.csv"))
+
+    codes <- read.csv("data-raw/codes.csv", stringsAsFactors = FALSE)
+    labels <- unique(variables$label)
+    codings <- lapply(labels, parse_label, codes)
+
+    # Filter for fully coded vars
+    full_codings <- sapply(codings, function(x) !any(is.na(x)))
+    full_labels <- labels[full_codings]
+    full_codes <- sapply(codings[full_codings], paste, collapse = "_")
+
+    data.frame(label = full_labels, code = full_codes)
+}
+
+# Processes raw JSON metadata. Returns a collection of data frames, one
+# per table.
+process_variables_json <- function(end_year, span) {
+    stopifnot(file.exists(json_path(end_year, span)))
+
+    json <- fromJSON(json_path(end_year, span))
+
+    # Filter for only estimate variables (non-PR)
+    est_vars <- str_match(names(json$variables), "^B[0-9]+_[0-9]+E$")
+    variables <- json$variables[!is.na(est_vars)]
+
     # Convert hierarchical data to tabular representation
     variables <- data.frame(variable = names(variables),
                             label = sapply(variables, `[[`, "label"),
                             stringsAsFactors = FALSE,
                             row.names = NULL)
+
     # Clean data set
     variables <- variables %>%
-        # Remove trailing 'E' from variable name
         mutate(variable = str_sub(variable, end = str_length(variable) - 1)) %>%
         mutate(id = variable) %>%
         separate(variable, c("table", "variable"), sep = "_")
 
-    variables
+    # Encode unique labels
+    encodings <- encode_unique_labels(variables)
+    coded_data <- merge(variables, encodings)
+
+    # Split based on table name
+    tables <- unique(coded_data$table)
+    sub_table <- function(x, df) df[df$table == x, ]
+    data <- lapply(tables, sub_table, df = coded_data)
+    names(data) <- tables
+
+    data
 }
 
-raw_files <- list(
-    list(end_year = 2009,
-         filename = "variables_2009",
-         url = "http://api.census.gov/data/2009/acs5/variables.json"),
-    list(end_year = 2010,
-         filename = "variables_2010",
-         url = "http://api.census.gov/data/2010/acs5/variables.json"),
-    list(end_year = 2011,
-         filename = "variables_2011",
-         url = "http://api.census.gov/data/2011/acs5/variables.json"),
-    list(end_year = 2012,
-         filename = "variables_2012",
-         url = "http://api.census.gov/data/2012/acs5/variables.json"),
-    list(end_year = 2013,
-         filename = "variables_2013",
-         url = "http://api.census.gov/data/2013/acs5/variables.json"),
-    list(end_year = 2014,
-         filename = "variables_2014",
-         url = "http://api.census.gov/data/2014/acs5/variables.json")
-)
-
-vars_df <- NULL
-
-for (raw_file in raw_files) {
-    # Retrieve ACS variable information if not already present
-    json_path <- paste0("data-raw/", raw_file$filename, ".json")
-    if (!file.exists(json_path)) {
-        message("Pulling variable info. for ", raw_file$end_year,
-                " 5-year survey")
-        download.file(raw_file$url, json_path, quiet = TRUE)
-    } else {
-        message("Using existing variable info. for ", raw_file$end_year,
-                " 5-year survey")
-    }
-
-    # Convert raw JSON to easier-to-use data frame
-    variables_path <- paste0("data-raw/", raw_file$filename, ".Rda")
-    if (!file.exists(variables_path)) {
-        message("Generating new variable data frame for ", raw_file$end_year,
-                " 5-year survey")
-        variables <- gen_variables(json_path)
-        variables$end_year <- raw_file$end_year
-        save(variables, file = variables_path)
-    } else {
-        message("Using existing variable data frame for ", raw_file$end_year,
-                " 5-year survey")
-        load(variables_path)
-    }
-
-    # Build up full data frame of all variables across all surveys
-    vars_df <- rbind(vars_df, variables)
+# Retrieves and processes variables info for the specified survey.
+update_variables_info <- function(end_year, span, use_cache = TRUE) {
+    download_variables_json(end_year, span, use_cache)
+    load_variables_data(end_year, span, use_cache)
 }
-
-# Encode unique labels across all surveys
-codes <- read.csv("data-raw/codes.csv", stringsAsFactors = FALSE)
-all_labels <- unique(vars_df$label)
-all_vars <- lapply(all_labels, parse_variable, codes)
-
-# Filter for fully coded vars
-coded_vars <- sapply(all_vars, function(x) !any(is.na(x)))
-all_labels <- all_labels[coded_vars]
-all_vars <- sapply(all_vars[coded_vars], paste, collapse = "_")
-
-# Join in coded labels; discard labels that are not fully coded
-coded_df <- data.frame(label = all_labels, code = all_vars)
-coded_data <- merge(vars_df, coded_df)
-
-# Store data for use in package
-save(coded_data, file = "data-raw/coded_data.Rda")
