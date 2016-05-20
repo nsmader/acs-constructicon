@@ -19,4 +19,5 @@ Suggests: knitr,
     rmarkdown,
     testthat
 VignetteBuilder: knitr
-Imports: assertthat
+Imports: assertthat,
+    stringr
