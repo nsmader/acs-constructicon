@@ -55,8 +55,23 @@ The easiest way to get started working on the package is to [open up the project
 Once in RStudio, you can [load the source](http://r-pkgs.had.co.nz/r.html#r-workflow).
 
 ```
-> devtools::load_all(".")
-> Loading acsmsrs
-> Behold, ACS Constructicons!
-> 1.  child_poverty
+devtools::load_all(".")
+Loading acsmsrs
+Behold, ACS Constructicons!
+1.    Child Poverty
+```
+
+[Test the code early and often](http://r-pkgs.had.co.nz/tests.html) with Ctrl/Cmd + Shift + T.
+
+## Encoding Variables
+
+This package includes coded ACS variable data for all 1, 3, and 5-year surveys.
+The `data-raw/codes.csv` table defines variable encodings.
+The `data-raw/variables.R` script creates mappings from encoded variable names to original variable names.
+And, `data-raw/update_sysdata.R` stores the encoded variable mappings within the package for easy distribution.
+
+If any of these files are updated, run `data-raw/update_sysdata.R` to regenerate the internal data set (stored in `R/sysdata.R`).
+
+```
+source("data-raw/update_sysdata.R")
 ```

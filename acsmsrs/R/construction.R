@@ -11,6 +11,7 @@ constr_register <- function(full_name, class_name, tables) {
     # Add entry for new construction
     new_entry <- list(
         class_name = class_name,
+        full_name = full_name,
         tables = tables
     )
     assign(full_name, new_entry, envir = constr_env)
