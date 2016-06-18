@@ -51,7 +51,7 @@ ggplot(cp$data, aes(x = nPov_ALt5)) + geom_bar()
 
 ## Development
 
-The easiest way to get started working on the package is to [open up the project in RStudio](http://r-pkgs.had.co.nz/package.html#projects).
+The easiest way to get started working on the package is to [open up the `acsmsrs.Rproj` project in RStudio](http://r-pkgs.had.co.nz/package.html#projects).
 Once in RStudio, you can [load the source](http://r-pkgs.had.co.nz/r.html#r-workflow).
 
 ```
@@ -61,7 +61,7 @@ Behold, ACS Constructicons!
 1.    Child Poverty
 ```
 
-[Test the code early and often](http://r-pkgs.had.co.nz/tests.html) with Ctrl/Cmd + Shift + T.
+After loading you can build the vignettes with `devtools::build_vignettes()` and [test the code](http://r-pkgs.had.co.nz/tests.html) with Ctrl/Cmd + Shift + T.
 
 ## Encoding Variables
 
