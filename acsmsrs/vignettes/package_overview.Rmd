@@ -1,6 +1,6 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "Package Overview"
+author: "Dylan Stark"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -8,6 +8,8 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+## General Use
 
 ```{r echo=FALSE}
 library(acsmsrs)
@@ -36,5 +38,13 @@ acs_data <- fetch_acs_data("Child Poverty", geo, endyear, span)
 Construct child poverty measures.
 
 ```{r}
-cp_data <- construct("Child Poverty", data = acs_data)
+cp <- construct("Child Poverty", data = acs_data)
+```
+
+Use new measures for good.
+
+```{r}
+library(ggplot2)
+
+ggplot(cp$data, aes(x = nPov_ALt5)) + geom_bar()
 ```
