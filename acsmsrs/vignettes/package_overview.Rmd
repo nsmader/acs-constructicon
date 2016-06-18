@@ -1,0 +1,77 @@
+---
+title: "Package Overview"
+author: "Dylan Stark"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## General Use
+
+```{r echo=FALSE}
+library(acsmsrs)
+```
+
+```{r echo=FALSE}
+# Load sample data for this vignette
+data("child_poverty_cook_2013_5yr")
+acs_data <- child_poverty_cook_2013_5yr
+```
+
+Pull data from ACS using `fetch_acs_data`.
+This will use the [acs package](https://cran.r-project.org/web/packages/acs/index.html) to retrive all data for the specified construction (`constr`).
+
+```r
+library(acs)
+library(acsmsrs)
+
+geo <- geo.make(state = "IL", county = "Cook", tract = "*") 
+endyear <- 2013
+span <- 5
+
+acs_data <- fetch_acs_data("Child Poverty", geo, endyear, span)
+```
+
+Construct child poverty measures.
+
+```{r}
+cp <- construct("Child Poverty", data = acs_data)
+```
+
+Use new measures for good.
+
+```{r}
+library(ggplot2)
+
+ggplot(cp$data, aes(x = nPov_ALt5)) + geom_bar()
+```
+
+## Development
+
+The easiest way to get started working on the package is to [open up the project in RStudio](http://r-pkgs.had.co.nz/package.html#projects).
+Once in RStudio, you can [load the source](http://r-pkgs.had.co.nz/r.html#r-workflow).
+
+```
+devtools::load_all(".")
+Loading acsmsrs
+Behold, ACS Constructicons!
+1.    Child Poverty
+```
+
+[Test the code early and often](http://r-pkgs.had.co.nz/tests.html) with Ctrl/Cmd + Shift + T.
+
+## Encoding Variables
+
+This package includes coded ACS variable data for all 1, 3, and 5-year surveys.
+The `data-raw/codes.csv` table defines variable encodings.
+The `data-raw/variables.R` script creates mappings from encoded variable names to original variable names.
+And, `data-raw/update_sysdata.R` stores the encoded variable mappings within the package for easy distribution.
+
+If any of these files are updated, run `data-raw/update_sysdata.R` to regenerate the internal data set (stored in `R/sysdata.R`).
+
+```
+source("data-raw/update_sysdata.R")
+```

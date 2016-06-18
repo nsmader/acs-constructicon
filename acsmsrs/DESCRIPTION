@@ -1,0 +1,23 @@
+Package: acsmsrs
+Title: Secondary Measures for the American Community Survey
+Version: 0.1
+Authors@R: c(
+    person("Nick", "Mader", email = "nsmader@gmail.com", role = c("aut", "cre")),
+    person("Ian", "Morey", email = "ian.matthew.morey@gmail.com", role = c("aut")),
+    person("Dylan", "Stark", email = "dylan.stark@gmail.com", role = c("aut"))
+    )
+Description: A set of tools for crowd-sourcing generation of secondary
+    measures constructed from the American Community Survey (ACS).
+URL: https://github.com/nsmader/acs-constructicon/acsmsrs
+BugReports: https://github.com/nsmader/acs-constructicon/issues
+Depends:
+    R (>= 3.2.3)
+License: GPL-2
+LazyData: true
+RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+Imports: assertthat,
+    stringr
