@@ -20,7 +20,8 @@ constr_register <- function(full_name, class_name, tables) {
     new_lookup <- c(full_name)
     names(new_lookup) <- c(class_name)
     if (exists("lookups", envir = constr_env)) {
-        all_lookups <- get("lookups", envir_constr_env)
+        all_lookups <- get("lookups", envir = constr_env)
+        all_lookups <- c(all_lookups, new_lookup)
     } else {
         all_lookups <- new_lookup
     }
