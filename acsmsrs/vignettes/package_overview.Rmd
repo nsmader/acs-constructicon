@@ -55,13 +55,55 @@ The easiest way to get started working on the package is to [open up the `acsmsr
 Once in RStudio, you can [load the source](http://r-pkgs.had.co.nz/r.html#r-workflow).
 
 ```
-devtools::load_all(".")
+> devtools::load_all(".")
 Loading acsmsrs
 Behold, ACS Constructicons!
 1.    Child Poverty
 ```
 
 After loading you can build the vignettes with `devtools::build_vignettes()` and [test the code](http://r-pkgs.had.co.nz/tests.html) with Ctrl/Cmd + Shift + T.
+
+## Adding Measures
+
+Adding new measures is (relatively) easy when using `R/msr_child_poverty.R` as a template.
+Let's say we want to add some educational attainment measures.
+First, we make a copy of the child poverty file as something like `R/msr/edu_attain.R`.
+Next, we update the *class name* from `child_poverty` to `edu_attain`, and *full name* from "Child Poverty" to "Educational Attainment".
+We also update the target ACS table from "B17006" to "B15001".
+This will give us the following updated methods:
+
+```r
+register.edu_attain <- function(obj) {
+    constr_register("Educational Attainment",
+                    class_name = "edu_attain",
+                    tables = "B15001")
+}
+
+measure.edu_attain <- function(constr) {
+    message("Constructing ", constr$name, " measures")
+
+    new_data <- compute_measure(orig_data = constr$data)
+
+    constr$data <- cbind(constr$data, new_data)
+
+    constr
+}
+```
+
+Finally, we reimplement `compute_measure` so that it creates the extra variables we need.
+The basic idea here is that this method takes a data frame of ACS data (see General Use section for overview of how to get that) and returns a data frame with one new measurement per column.
+Once you've implemented this method, you're all done.
+You can now reload the package and start using your new measure:
+
+```
+> devtools::load_all(".")
+Loading acsmsrs
+Behold, ACS Constructicons!
+1.    Child Poverty
+2.    Educational Attainment
+> edu_data <- fetch_acs_data("Educational Attainment", geo, endyear, span)
+> ed <- construct("Educational Attainment", data = edu_data)
+```
 
 ## Encoding Variables
 
@@ -73,5 +115,5 @@ And, `data-raw/update_sysdata.R` stores the encoded variable mappings within the
 If any of these files are updated, run `data-raw/update_sysdata.R` to regenerate the internal data set (stored in `R/sysdata.R`).
 
 ```
-source("data-raw/update_sysdata.R")
+> source("data-raw/update_sysdata.R")
 ```
