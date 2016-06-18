@@ -48,3 +48,15 @@ library(ggplot2)
 
 ggplot(cp$data, aes(x = nPov_ALt5)) + geom_bar()
 ```
+
+## Development
+
+The easiest way to get started working on the package is to [open up the project in RStudio](http://r-pkgs.had.co.nz/package.html#projects).
+Once in RStudio, you can [load the source](http://r-pkgs.had.co.nz/r.html#r-workflow).
+
+```
+> devtools::load_all(".")
+> Loading acsmsrs
+> Behold, ACS Constructicons!
+> 1.  child_poverty
+```
