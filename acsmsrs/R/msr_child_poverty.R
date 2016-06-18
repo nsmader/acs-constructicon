@@ -36,5 +36,8 @@ measure.child_poverty <- function(constr) {
             out_data[, code("nPov", age)] / out_data[, code("wPov", age)]
     }
 
-    out_data
+    # Set new data for construction
+    constr$data <- out_data
+
+    constr
 }
