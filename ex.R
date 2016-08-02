@@ -1,4 +1,9 @@
 library(assertthat)
+library(lazyeval)
+library(dplyr)
+
+################################################################################
+# Helpers
 
 equals <- function(a, b) {
     if (is.na(b)) {
@@ -7,6 +12,9 @@ equals <- function(a, b) {
         a == b
     }
 }
+
+################################################################################
+# Child Poverty method
 
 child_poverty <- function(data,
                           universe = "RelChiUnder18",
