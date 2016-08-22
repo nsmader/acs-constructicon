@@ -7,10 +7,10 @@ sexbyage <- function(in_data, geos){
                      select = colnames(in_data) %in% geos)
   attach(in_data)
   
-  ages <- c("lt5", "5to9", "10to14", "15to17", "18to19", "20", "21",
+  ages <- c("Lt5", "5to9", "10to14", "15to17", "18to19", "20", "21",
             "22to24", "25to29", "30to34", "35to39", "40to44", "45to49",
             "50to54", "55to59", "60to61", "62to64", "65to66", "67to69",
-            "70to74", "75to79", "80to84", "ge85")
+            "70to74", "75to79", "80to84", "Ge85")
   
   ### Create variables of interest by summing across unused cross-tabs
   for (a in ages){

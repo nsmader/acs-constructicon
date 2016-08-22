@@ -1,4 +1,4 @@
-# Update internal package data. Right now this includes coded variables.
+ # Update internal package data. Right now this includes coded variables.
 
 source("data-raw/variables.R")
 
