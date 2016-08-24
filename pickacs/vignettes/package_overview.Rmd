@@ -12,7 +12,7 @@ vignette: >
 ## General Use
 
 ```{r echo=FALSE}
-library(acsmsrs)
+library(pickacs)
 ```
 
 ```{r echo=FALSE}
@@ -26,7 +26,7 @@ This will use the [acs package](https://cran.r-project.org/web/packages/acs/inde
 
 ```r
 library(acs)
-library(acsmsrs)
+library(pickacs)
 
 geo <- geo.make(state = "IL", county = "Cook", tract = "*") 
 endyear <- 2013
@@ -51,12 +51,12 @@ ggplot(cp$data, aes(x = nPov_ALt5)) + geom_bar()
 
 ## Development
 
-The easiest way to get started working on the package is to [open up the `acsmsrs.Rproj` project in RStudio](http://r-pkgs.had.co.nz/package.html#projects).
+The easiest way to get started working on the package is to [open up the `pickacs.Rproj` project in RStudio](http://r-pkgs.had.co.nz/package.html#projects).
 Once in RStudio, you can [load the source](http://r-pkgs.had.co.nz/r.html#r-workflow).
 
 ```
 > devtools::load_all(".")
-Loading acsmsrs
+Loading pickacs
 Behold, ACS Constructicons!
 1.    Child Poverty
 ```
@@ -97,7 +97,7 @@ You can now reload the package and start using your new measure:
 
 ```
 > devtools::load_all(".")
-Loading acsmsrs
+Loading pickacs
 Behold, ACS Constructicons!
 1.    Child Poverty
 2.    Educational Attainment
