@@ -1,4 +1,8 @@
 *.zip
 key.txt
+
 *.Rhistory
 .Rproj.user
+.Rapp.history
+
+.DS_Store
