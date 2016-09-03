@@ -2,5 +2,9 @@
 
 export(code)
 export(construct)
+export(enter_api_key)
 export(fetch_acs_data)
+export(have_api_key)
+export(load_api_key)
+export(retrieve_api_key)
 export(table_var)
