@@ -20,4 +20,6 @@ Suggests: knitr,
     testthat
 VignetteBuilder: knitr
 Imports: assertthat,
-    stringr
+    stringr,
+    lazyeval,
+    dplyr
