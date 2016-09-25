@@ -15,14 +15,14 @@ test_that("unknown construction name stops execution", {
 
 test_that("construct only accepts single string name", {
     expect_error(construct(42, good_data),
-                 "Error.*name is not a string")
+                 "name is not a string.*")
     expect_error(construct(c("One", "Two"), good_data),
-                 "Error.*name is not a string")
+                 "name is not a string.*")
 })
 
 test_that("construct only accepts acs dataset", {
     expect_error(construct(good_name, data.frame()),
-                 "Error.*acs::is.acs.*is not TRUE")
+                 "acs::is.acs.*is not TRUE")
 })
 
 test_that("construct generates object with correct class", {
@@ -31,7 +31,7 @@ test_that("construct generates object with correct class", {
 
 test_that("construct_acs_data data is an acs dataset", {
     expect_error(convert_acs_data(data.frame()),
-                 "Error.*acs::is.acs.*is not TRUE")
+                 "acs::is.acs.*is not TRUE")
 })
 
 test_that("construct_acs_data returns a data frame", {
@@ -41,7 +41,7 @@ test_that("construct_acs_data returns a data frame", {
 
 test_that("geo_ids geo is data frame", {
     expect_error(geo_ids(42),
-                 "Error.*geo is not a data frame")
+                 "geo is not a data frame")
 })
 
 test_that("geo_ids returns a list of strings of same length as input data", {
