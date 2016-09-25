@@ -1,6 +1,7 @@
 #-------------------------------------------------------------------------------
 # Load relevant libraries and files
 #-------------------------------------------------------------------------------
+rm(list = ls())
 try(setwd(dir = "~/GitHub/acs-constructicon/"), silent = TRUE)
 try(setwd(dir = "/Users/imorey/Documents/GitHub/acs-constructicon/"), silent = TRUE)
 library(acs)
@@ -21,6 +22,17 @@ source("scripts/rename-cols.R")
 # endyear = 2014; span = 5; constr = "Teen Birth Rate"; nametype = "var"
 # endyear = 2013; span = 5; constr = "Ed by Age, Sex"; nametype = "var"
 # endyear = 2014; span = 5; constr = "Sex by Age"; nametype = "var"
+
+# Try specifying all counties in Illinois
+ilCounties <- geo.lookup(state = "IL", county = "*")
+myCounties <- ilCounties$county.name[!is.na(ilCounties$county.name)]
+geo <- geo.make(state = "IL", county = myCounties, tract = "*", block.group = "*") # Works
+
+# geo <- geo.make(state = "IL", county = c("Cook", "Lake"), tract = "*", block.group = "*")
+# geo <- geo.make(state = "IL", county = "*", tract = "*", block.group = "*")
+# endyear = 2014; span = 5; constr = "Sex by Age"; nametype = "var"
+
+myConstr <- getAcsConstr(geo = geo, endyear = 2014, span = 5, constr = "Sex by Age")
 
 getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
   
@@ -45,10 +57,13 @@ getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
       
       # Need new row names for output. Do this with acs.pull@geography subelements
       rownames(acs.est.df) <- NULL
-      acs.est.df$geoid <- paste0(sprintf("%02d", acs.pull@geography$state),
-                                 sprintf("%03d", acs.pull@geography$county),
-                                 acs.pull@geography$tract) # For whatever reason, tract is already character format, with leading zeroes
-      acs.est.df$tract <- acs.pull@geography$tract
+      acs.est.df <- within(acs.est.df, {
+        state  <- sprintf("%02d", acs.pull@geography$state)
+        county <- sprintf("%03d", acs.pull@geography$county)
+        tract <- acs.pull@geography$tract # For whatever reason, tract is already character format, with leading zeroes
+        blockgroup <- ifelse(length(acs.pull@geography$blockgroup)==0, "", acs.pull@geography$blockgroup)
+        geoid <- paste0(state, county, tract, blockgroup)
+      })
       
       if (ixt == 1){
         raw.tables <- acs.est.df
@@ -64,8 +79,8 @@ getAcsConstr <- function(geo, endyear, span, constr, nametype = "var"){
                                  nametype = nametype)
   
   ### Call a script which constructs desired measures from the table elements
-    selectableGeographies <- c("us", "region", "division", "state", "county",
-                             "subminor", "place", "tract", "block+group",
+    selectableGeographies <- c("geoid", "us", "region", "division", "state", "county",
+                             "subminor", "place", "tract", "blockgroup",
                              "consolidated+city", "alaska+native+regional+corporation",
                              "american+indian+area/alaska+native+area/hawaiian+home+land",
                              "tribal+subdivision")
