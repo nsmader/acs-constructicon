@@ -1,0 +1,74 @@
+---
+title: "Experimental Aggregations (Brainstorming)"
+author: "Dylan Stark"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+ACS tables have implicit hierarchy which relates fields to nested concepts.
+This is an attempt to provide means to easily query for collections of interrelated fields.
+
+*What is the total number of children under 18 related to a householder?*
+
+```r
+acs_sum(universe == RelChiUnder18)
+```
+
+*How many children live in a household with income over previous 12 months below poverty level?*
+
+```r
+acs_sum(universe == RelChiUnder18,
+        income < poverty)
+```
+
+```r
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == FamMar)
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == FamMar,
+        age == ALt5)
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == FamMar,
+        age == A5)
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == FamMar,
+        age == A6to17)
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == OthFam)
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == OthFam,
+        householder == HhGmNWife)
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == OthFam,
+        householder == HhGmNWife,
+        age == ALt5)
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == OthFam,
+        householder == HhGfNHus)
+acs_sum(universe == RelChiUnder18,
+        income < poverty,
+        family == OthFam,
+        householder == HhGfNHus,
+        age == ALt5)
+acs_sum(universe == RelChiUnder18,
+        family == FamMar)
+acs_sum(universe == RelChiUnder18,
+        family == FamMar,
+        age == ALt5)
+acs_sum(universe == RelChiUnder18,
+        householder == HhGmNWife)
+acs_sum(universe == RelChiUnder18,
+        age == ALt5)
+```

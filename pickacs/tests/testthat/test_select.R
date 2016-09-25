@@ -116,4 +116,76 @@ test_that("third level, single branch works", {
     expect_is(result_OthFam_HhGmNWife, "character")
     expect_equal(length(result_OthFam_HhGmNWife), 1)
     expect_equal(result_OthFam_HhGmNWife[1], "B17006_008")
+
+    result_OthFam_HhGfNHus <- child_poverty(cp,
+      income = "IncPrev12MoLtPov",
+      family = "OthFam",
+      householder = "HhGfNHus"
+    )
+
+    expect_is(result_OthFam_HhGfNHus, "character")
+    expect_equal(length(result_OthFam_HhGfNHus), 1)
+    expect_equal(result_OthFam_HhGfNHus[1], "B17006_012")
+})
+
+test_that("fourth level, single branch works", {
+    result_OthFam_HhGmNWife_ALt5 <- child_poverty(cp,
+      income = "IncPrev12MoLtPov",
+      family = "OthFam",
+      householder = "HhGmNWife",
+      age = "ALt5"
+    )
+
+    expect_is(result_OthFam_HhGmNWife_ALt5, "character")
+    expect_equal(length(result_OthFam_HhGmNWife_ALt5), 1)
+    expect_equal(result_OthFam_HhGmNWife_ALt5[1], "B17006_009")
+
+    result_OthFam_HhGfNHus_ALt5 <- child_poverty(cp,
+      income = "IncPrev12MoLtPov",
+      family = "OthFam",
+      householder = "HhGfNHus",
+      age = "ALt5"
+    )
+
+    expect_is(result_OthFam_HhGfNHus_ALt5, "character")
+    expect_equal(length(result_OthFam_HhGfNHus_ALt5), 1)
+    expect_equal(result_OthFam_HhGfNHus_ALt5[1], "B17006_013")
+})
+
+test_that("we can pick all fields for specific family type", {
+    result <- child_poverty(cp,
+      family = "FamMar"
+    )
+    expect_is(result, "character")
+    expect_equal(length(result), 2)
+    expect_equal(result, c("B17006_003", "B17006_017"))
+})
+
+test_that("we can pick all fields for specific householder type", {
+    result <- child_poverty(cp,
+      householder = "HhGmNWife"
+    )
+    expect_is(result, "character")
+    expect_equal(length(result), 2)
+    expect_equal(result, c("B17006_008", "B17006_022"))
+})
+
+test_that("we can pick fields for children in married families who are at least 5", {
+    result <- child_poverty(cp,
+      family = "FamMar",
+      age = "ALt5"
+    )
+    expect_is(result, "character")
+    expect_equal(length(result), 2)
+    expect_equal(result, c("B17006_004", "B17006_018"))
+})
+
+test_that("we can pick all fields for children who are at least 5", {
+    result <- child_poverty(cp,
+      age = "ALt5"
+    )
+    expect_is(result, "character")
+    expect_equal(length(result), 6)
+    expect_equal(result, c("B17006_004", "B17006_009", "B17006_013",
+                           "B17006_018", "B17006_023", "B17006_027"))
 })
