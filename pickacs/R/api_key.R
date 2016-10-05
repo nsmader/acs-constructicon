@@ -11,6 +11,8 @@ read_api_key <- function(file) {
 #' Retrieve installed ACS API key
 #'
 #' @param file The filename for the installed ACS API key
+#'
+#' @export
 retrieve_api_key <- function(file = "key.Rda") {
     if (have_api_key(file)) {
         load(acs_key_path(file))
@@ -26,6 +28,8 @@ retrieve_api_key <- function(file = "key.Rda") {
 #'
 #' @seealso \code{\link{load_api_key}} for loading from file,
 #'   and \code{\link{enter_api_key}} for entering with interactive prompt.
+#'
+#' @export
 have_api_key <- function(file = "key.Rda") {
     file_test("-f", acs_key_path(file))
 }
@@ -35,6 +39,8 @@ have_api_key <- function(file = "key.Rda") {
 #' @param file The filename for the installed ACS API key
 #'
 #' @seealso \code{\link{load_api_key}} for loading from file.
+#'
+#' @export
 enter_api_key <- function(file = "key.Rda") {
     api_key <- readline(prompt = "Enter API key: ")
     acs::api.key.install(api_key, file = file)
@@ -46,6 +52,8 @@ enter_api_key <- function(file = "key.Rda") {
 #' @param file The filename for the installed ACS API key
 #'
 #' @seealso \code{\link{enter_api_key}} for entering with interactive prompt.
+#'
+#' @export
 load_api_key <- function(source_file,
                          file = "key.Rda") {
     if (file_test("-f", source_file)) {
