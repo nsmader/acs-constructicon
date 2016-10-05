@@ -57,8 +57,6 @@ Once in RStudio, you can [load the source](http://r-pkgs.had.co.nz/r.html#r-work
 ```
 > devtools::load_all(".")
 Loading pickacs
-Behold, ACS Constructicons!
-1.    Child Poverty
 ```
 
 After loading you can build the vignettes with `devtools::build_vignettes()` and [test the code](http://r-pkgs.had.co.nz/tests.html) with Ctrl/Cmd + Shift + T.

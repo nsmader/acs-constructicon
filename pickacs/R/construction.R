@@ -62,3 +62,16 @@ construction <- function(name) {
     structure(list(), class = c(subclass_name, "construction"))
 }
 
+# Add new constructions here:
+constructions <- list(
+    list(
+        full_name = "Child Poverty",
+        class_name = "child_poverty",
+        tables = "B17006"
+    )
+)
+
+for (constr in constructions) {
+    constr_register(constr$full_name, constr$class_name, constr$tables)
+}
+
