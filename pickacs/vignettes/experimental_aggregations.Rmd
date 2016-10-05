@@ -15,60 +15,208 @@ This is an attempt to provide means to easily query for collections of interrela
 *What is the total number of children under 18 related to a householder?*
 
 ```r
-acs_sum(universe == RelChiUnder18)
+amass(universe == RelChiUnder18)
+[1] "B17006001"
 ```
 
 *How many children live in a household with income over previous 12 months below poverty level?*
 
 ```r
-acs_sum(universe == RelChiUnder18,
+amass(universe == RelChiUnder18,
         income < poverty)
+[1] "B17006002"
 ```
 
 ```r
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == FamMar)
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == FamMar,
-        age == ALt5)
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == FamMar,
-        age == A5)
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == FamMar,
-        age == A6to17)
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == OthFam)
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == OthFam,
-        householder == HhGmNWife)
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == OthFam,
-        householder == HhGmNWife,
-        age == ALt5)
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == OthFam,
-        householder == HhGfNHus)
-acs_sum(universe == RelChiUnder18,
-        income < poverty,
-        family == OthFam,
-        householder == HhGfNHus,
-        age == ALt5)
-acs_sum(universe == RelChiUnder18,
-        family == FamMar)
-acs_sum(universe == RelChiUnder18,
-        family == FamMar,
-        age == ALt5)
-acs_sum(universe == RelChiUnder18,
-        householder == HhGmNWife)
-acs_sum(universe == RelChiUnder18,
-        age == ALt5)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == FamMar)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == FamMar,
+      age == ALt5)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == FamMar,
+      age == A5)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == FamMar,
+      age == A6to17)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == OthFam)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == OthFam,
+      householder == HhGmNWife)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == OthFam,
+      householder == HhGmNWife,
+      age == ALt5)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == OthFam,
+      householder == HhGfNHus)
+amass(universe == RelChiUnder18,
+      income < poverty,
+      family == OthFam,
+      householder == HhGfNHus,
+      age == ALt5)
+amass(universe == RelChiUnder18,
+      family == FamMar)
+amass(universe == RelChiUnder18,
+     family == FamMar,
+      age == ALt5)
+amass(universe == RelChiUnder18,
+      householder == HhGmNWife)
+```
+
+*How many "related children under 18 years" are "under 5 years"?*
+
+```r
+> age_lt_5 <- amass(
+    universe == related_children,
+    age == lt_5
+  )
+
+> age_lt_5
+ [1] "B17006004" "B17006009" "B17006013" "B17006018"
+ [5] "B17006023" "B17006027"
+```
+
+*How many "related children under 18 years" are "5 years" or above?*
+
+```r
+> age_lt_5 <- amass(
+    universe == "related_children",
+    age == one_of(c("age_5", "age_6_to_17"))
+  )
+> age_lt_5
+ [1] B17006_005 B17006_006 B17006_010 B17006_011 B17006_014 B17006_015 B17006_019 B17006_020
+ [9] B17006_024 B17006_025 B17006_028 B17006_029
+
+# Equivalently, with dplyr:
+> child_poverty_encoding %>%
+    filter(age == "A5" | age == "A6to17") %>%
+    distinct(variable) %>%
+    `[[`(1)
+ [1] B17006_005 B17006_006 B17006_010 B17006_011 B17006_014 B17006_015 B17006_019 B17006_020
+ [9] B17006_024 B17006_025 B17006_028 B17006_029
+```
+
+*How many "related children under 18 years" are not "5 years" of age?*
+
+```r
+> age_lt_5 <- amass(
+    universe == "related_children",
+    age == not("age_5")
+  )
+> age_lt_5
+ [1] B17006_004 B17006_006 B17006_009 B17006_011 B17006_013 B17006_015 B17006_018 B17006_020
+ [9] B17006_023 B17006_025 B17006_027 B17006_029
+
+# Equivalently, with dplyr:
+> child_poverty_encoding %>%
+    filter(age != "A5") %>%
+    distinct(variable) %>%
+    `[[`(1)
+ [1] B17006_004 B17006_006 B17006_009 B17006_011 B17006_013 B17006_015 B17006_018 B17006_020
+ [9] B17006_023 B17006_025 B17006_027 B17006_029
+```
+
+## What are all possible measures in table B17005, explicit or derived?
+
+*What is the total "civilian population 16 years of age and over for whom poverty status is determined"?*
+
+```r
+> civ_pop <- acs_table(name = "B17005")
+> civ_pop %>%
+>   select(Total)
+[1] B17005001
+```
+
+*What is the total "civilian population 16 years of age and over for whom poverty status is determined" with "income in the past 12 months below poverty level?"*
+
+```r
+> civ_pop %>%
+    select(income < poverty_level)
+> civ_pop %>%
+    select(income_lt_poverty_level)
+[1] B17005002
+```
+
+*What is the poverty rate for "civilian population 16 years of age and over for whom poverty status is determined" with "income in the past 12 months below poverty level?"*
+
+```r
+> civ_pop %>%
+  select(total, income_lt_poverty) %>%
+  mutate(poverty_rate = income_lt_poverty / total)
+```
+
+That's simple because we are picking two explicit values.
+Things get more difficult when we try to aggregate across branches.
+
+*What is the total "male" "civilian population 16 years of age and over for whom poverty status is determined" with "income in the past 12 months below poverty level?"*
+
+```r
+> civ_pop %>%
+    mutate(all_males = sum(male, income_lt_poverty_level))
+> civ_pop %>%
+    mutate(all_males = sum(amass(sex == male, income == below_poverty)))
+```
+
+Above, we assumed there's a `amass` method defined for the B17005 table that takes arguments corresponding to the different levels in the conceptual hierarchy of that table: `sex` can be either `male` of `female`, and `income` can be either `below_poverty` or `at_or_above_poverty`.
+The other possible arguments are
+
+* `in_labor_force`: `TRUE` or `FALSE`
+* `employed`: `TRUE` or `FALSE`
+
+*What is the ratio of "male" to "female" "civilian population 16 years of age and over for whom poverty status is determined" who are "unemployed?"*
+
+```r
+> civ_pop %>%
+    mutate(unemployed_men = sum(amass(sex == male, employed == FALSE)),
+           unemployed_women = sum(amass(sex == female, employed == FALSE)),
+           unemployed_men_to_women = acs::divide(unemployed_men, unemployed_women))
+> unemployed_men <- civ_pop %>%
+    select(male, unemployed) %>%
+    acs::sum(agg.term = c("Cook County", "unemployed_men"))
+> unemployed_women <- civ_pop %>%
+    select(female, unemployed) %>%
+    acs::sum(agg.term = c("Cook County", "unemployed_women"))
+```
+
+## 4 Oct Brainstorming
+
+```r
+amass_by(civ_pop,
+         unemployment_rate = sum(amass(employed == TRUE)) / sum(amass(in_labor_force == TRUE)),
+         by = c(sex, age))
+         
+divide.acs(
+  sum(amass(sex = male, age = A5, employed == TRUE)),
+  sum(amass(sex = male, age = A5, in_labor_force == TRUE)),
+  method = "proportion"
+)
+divide.acs(
+  sum(amass(sex = male, age = ALt5, employed == TRUE)),
+  sum(amass(sex = male, age = ALt5, in_labor_force == TRUE)),
+  method = "proportion"
+)
+...
+```
+
+```r
+B17006 <- list(
+  age = c("A5", "ALt5", "A6to17"),
+  sex = c("Male", "Female"),
+  ...
+)
+
+amass_by(civ_pop,
+         unemployment_rate = sum(amass(employed == TRUE)) / sum(amass(in_labor_force == TRUE)),
+         by = c(sex = c("A5", "ALt5", "A6to17"), 
+                age = c("Male", "Female")))
 ```
